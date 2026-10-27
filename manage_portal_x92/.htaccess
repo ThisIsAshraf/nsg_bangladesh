@@ -1,0 +1,14 @@
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+    # Explicitly grant access to all rewritten admin page requests
+    Require all granted
+</IfModule>
+
+# Prevent web access to initialization and configuration files only
+
+<FilesMatch "^(\.htaccess|\.htpasswd|\_init\.php)$">
+<IfModule mod_authz_core.c>
+Require all denied
+</IfModule>
+</FilesMatch>

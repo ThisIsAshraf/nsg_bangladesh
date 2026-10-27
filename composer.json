@@ -1,0 +1,7 @@
+{
+  "name": "noorstaffing/bangladesh-corporate-site",
+  "description": "Core PHP and MySQL corporate website and recruitment CMS",
+  "type": "project",
+  "require": {"php": ">=8.1", "ext-pdo": "*", "ext-pdo_mysql": "*", "ext-fileinfo": "*"},
+  "autoload": {"files": ["app/helpers.php"]}
+}

@@ -1,0 +1,1 @@
+<?php require __DIR__.'/../middleware.php';api_method('POST');api_json(['ok'=>false,'error'=>'Use the secure web application form for CV uploads. This endpoint is intentionally not enabled until API authentication, rate limiting, and upload policy are configured.'],501);

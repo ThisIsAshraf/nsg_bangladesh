@@ -1,0 +1,24 @@
+Options -Indexes
+DirectoryIndex index.php
+
+# Block direct access to sensitive core configuration and setup files
+<FilesMatch "^(\.env|\.env\.example|composer\.(json|lock)|README\.md|folder_tree\.txt)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Block direct access to private application storage and document uploads
+RewriteRule ^storage/ - [F,L]
+RewriteRule ^uploads/documents/ - [F,L]
+
+# --- Admin URL Masking ---
+# Dynamically rewrites /admin/subfolder/page.php -> manage_portal_x92/subfolder/page.php
+RewriteRule ^admin/(.*)$ manage_portal_x92/$1 [L,QSA]
+RewriteRule ^admin/?$ manage_portal_x92/index.php [L,QSA]
+
+# Prevent direct access to manage_portal_x92 by redirecting browsers back to masked /admin/ URLs
+RewriteCond %{THE_REQUEST} \s.*/manage_portal_x92/([^\s?]*) [NC]
+RewriteRule ^manage_portal_x92/(.*)$ admin/$1 [R=301,L]
+</IfModule>

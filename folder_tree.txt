@@ -1,0 +1,85 @@
+nsg
+│
+├── api
+│   ├── v1
+│   │   ├── applications
+│   │   │   └── create.php
+│   │   ├── contact
+│   │   │   └── create.php
+│   │   ├── jobs
+│   │   │   ├── detail.php
+│   │   │   └── list.php
+│   │   ├── public
+│   │   │   └── site.php
+│   │   └── middleware.php
+│   └── README.md
+├── app
+│   ├── bootstrap.php
+│   ├── footer.php
+│   ├── header.php
+│   └── helpers.php
+├── assets
+│   └── style.css
+├── DBSchema
+│   └── noorstaffing.sql
+├── manage_portal_x92
+│   ├── auth
+│   │   ├── sign-in.php
+│   │   └── sign-out.php
+│   ├── careers
+│   │   ├── applications.php
+│   │   └── jobs.php
+│   ├── content
+│   │   ├── about.php
+│   │   ├── board.php
+│   │   ├── contact.php
+│   │   ├── pages.php
+│   │   └── people.php
+│   ├── people
+│   │   └── people.php
+│   ├── system
+│   │   ├── home.php
+│   │   ├── messages.php
+│   │   └── settings.php
+│   ├── .htaccess
+│   ├── index.php
+│   └── _init.php
+├── storage
+│   └── .gitkeep
+├── uploads
+│   ├── documents
+│   │   └── .gitkeep
+│   └── images
+│       └── .gitkeep
+├── vendor
+│   ├── composer
+│   │   ├── autoload_classmap.php
+│   │   ├── autoload_files.php
+│   │   ├── autoload_namespaces.php
+│   │   ├── autoload_psr4.php
+│   │   ├── autoload_real.php
+│   │   ├── autoload_static.php
+│   │   ├── ClassLoader.php
+│   │   ├── installed.json
+│   │   ├── installed.php
+│   │   ├── InstalledVersions.php
+│   │   ├── LICENSE
+│   │   └── platform_check.php
+│   └── autoload.php
+├── .env
+├── .env.example
+├── .gitignore
+├── .htaccess
+├── about.php
+├── apply.php
+├── board.php
+├── careers.php
+├── composer.json
+├── composer.lock
+├── contact.php
+├── folder_tree.txt
+├── generate_tree.php
+├── index.php
+├── job.php
+├── people.php
+└── README.md

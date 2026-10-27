@@ -1,0 +1,1 @@
+<?php require __DIR__.'/../middleware.php';api_method('GET');$settings=db()->query("SELECT setting_key,setting_value FROM site_settings WHERE setting_key IN ('site_name','announcement','home_heading','home_intro','theme_primary','theme_accent')")->fetchAll();$out=[];foreach($settings as $row)$out[$row['setting_key']]=$row['setting_value'];api_json(['ok'=>true,'data'=>$out]);
