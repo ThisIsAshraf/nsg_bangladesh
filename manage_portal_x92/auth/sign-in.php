@@ -70,16 +70,113 @@ $pageTitle = 'Admin Sign In';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($pageTitle) ?> | <?= e(setting('site_name', 'Noor Staffing')) ?></title>
-    <link rel="stylesheet" href="<?= e(site_url('assets/style.css')) ?>">
-    <?= render_dynamic_css() ?>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body.admin-auth-body {
+            background: #f4f6f8;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .auth-container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eef2f5;
+        }
+
+        .auth-container h1 {
+            font-size: 1.5rem;
+            color: #123B5D;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .admin-form .field {
+            display: block;
+            margin-bottom: 1.25rem;
+        }
+
+        .admin-form .field span {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 0.4rem;
+        }
+
+        .admin-form input[type="email"],
+        .admin-form input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .admin-form input:focus {
+            outline: none;
+            border-color: #123B5D;
+            box-shadow: 0 0 0 3px rgba(18, 59, 93, 0.1);
+        }
+
+        .button {
+            width: 100%;
+            padding: 0.85rem;
+            background: #123B5D;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .button:hover {
+            background: #0d2a43;
+        }
+
+        .danger {
+            color: #c62828;
+            background: #ffebee;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .muted {
+            color: #777;
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.825rem;
+        }
+    </style>
 </head>
 
 <body class="admin-auth-body">
-    <section class="prose auth-container">
+    <section class="auth-container">
         <h1>Administrator Sign In</h1>
 
         <?php if ($error): ?>
-            <p class="danger" style="color: #d9534f; background: #fdf7f7; padding: 0.75rem; border: 1px solid #d9534f; border-radius: 4px;">
+            <p class="danger">
                 <?= e($error) ?>
             </p>
         <?php endif; ?>
@@ -102,7 +199,7 @@ $pageTitle = 'Admin Sign In';
             </p>
         </form>
 
-        <p class="muted" style="margin-top: 2rem; font-size: 0.875rem;">
+        <p class="muted">
             Protected access for authorized administrators only.
         </p>
     </section>

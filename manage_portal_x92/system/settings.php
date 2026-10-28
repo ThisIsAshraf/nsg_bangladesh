@@ -9,36 +9,60 @@ require_admin('settings.write');
 $message = '';
 $error   = '';
 
-// Comprehensive list of global site settings
+// --- HELPER: Upload Logo File ---
+function handle_logo_upload(): ?string
+{
+    if (!isset($_FILES['file_site_logo']) || $_FILES['file_site_logo']['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $tmpName = $_FILES['file_site_logo']['tmp_name'];
+    $name    = basename($_FILES['file_site_logo']['name']);
+    $ext     = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    if (!in_array($ext, $allowed, true)) {
+        throw new Exception('Invalid logo format. Allowed: JPG, PNG, GIF, WEBP, SVG');
+    }
+
+    $uploadDir = dirname(__DIR__, 2) . '/uploads/images/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $filename = 'site_logo_' . time() . '.' . $ext;
+    $targetPath = $uploadDir . $filename;
+
+    if (move_uploaded_file($tmpName, $targetPath)) {
+        return 'uploads/images/' . $filename;
+    }
+
+    throw new Exception('Failed to upload logo image file.');
+}
+
+// Global Site & Branding Settings mapped to your header.php keys
 $settingKeys = [
-    // 1. General Site Identity
-    'site_name'             => 'Site Name (English)',
-    'site_name_bn'          => 'Site Name (Bangla)',
-    'site_tagline'          => 'Site Tagline / Subtitle',
-    'site_logo_text'        => 'Header Brand Text / Logo Title',
+    // Branding & Logo
+    'site_logo'               => 'Site Logo Relative Path',
+    'logo_width'              => 'Logo Width in Pixels (e.g., 180)',
+    'site_name'               => 'Site Name (English)',
+    'site_name_bn'            => 'Site Name (Bangla)',
+    'seo_description'         => 'Default Meta Description',
 
-    // 2. Contact Information
-    'contact_email'         => 'Primary Contact Email Address',
-    'contact_phone'         => 'Primary Phone / Mobile Number',
-    'contact_address'       => 'Bangladesh Office Address (English)',
-    'contact_address_bn'    => 'Bangladesh Office Address (Bangla)',
-    'head_office_address'   => 'US Head Office Address (English)',
-    'head_office_address_bn' => 'US Head Office Address (Bangla)',
-    'contact_map_embed_url' => 'Google Maps Embed URL (iframe src)',
+    // Contact Information
+    'contact_email'           => 'Primary Contact Email Address',
+    'contact_phone'           => 'Primary Phone / Mobile Number',
+    'contact_address'         => 'Bangladesh Office Address (English)',
+    'head_office_address'     => 'US Head Office Address (English)',
 
-    // 3. Social Media Links
-    'social_facebook'       => 'Facebook URL',
-    'social_linkedin'       => 'LinkedIn URL',
-    'social_twitter'        => 'Twitter / X URL',
-    'social_instagram'      => 'Instagram URL',
+    // Social Media Links (Matches setting('linkedin_url') in header.php)
+    'linkedin_url'            => 'LinkedIn Profile URL',
+    'facebook_url'            => 'Facebook Page URL',
+    'instagram_url'           => 'Instagram Profile URL',
 
-    // 4. Default SEO Fallbacks
-    'default_seo_title'       => 'Default Browser Title',
-    'default_seo_description' => 'Default Meta Description',
-
-    // 5. Global Theme Colors
-    'theme_primary_color'   => 'Primary Brand Color (Hex)',
-    'theme_accent_color'    => 'Accent Color (Hex)'
+    // Theme Colors
+    'theme_primary_color'     => 'Primary Brand Color (Hex)',
+    'theme_accent_color'      => 'Accent / Red Highlight Color (Hex)'
 ];
 
 // --- POST HANDLER ---
@@ -54,13 +78,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), `updated_at` = NOW()
         ');
 
+        $uploadedLogo = handle_logo_upload();
+
         foreach (array_keys($settingKeys) as $key) {
-            $val = trim((string)($_POST['setting_' . $key] ?? ''));
+            $val = '';
+            if ($key === 'site_logo' && $uploadedLogo !== null) {
+                $val = $uploadedLogo;
+            } else {
+                $val = trim((string)($_POST['setting_' . $key] ?? ''));
+            }
             $stmt->execute([$key, $val]);
         }
 
         db()->commit();
-        $message = 'Global settings and theme variables updated successfully!';
+        $message = 'Global site settings and logo branding saved successfully!';
     } catch (Throwable $t) {
         if (db()->inTransaction()) {
             db()->rollBack();
@@ -69,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch all current setting values from DB
+// Fetch all current settings
 $currentSettings = [];
 try {
     $rows = db()->query('SELECT `key`, `value` FROM settings')->fetchAll();
@@ -242,18 +273,30 @@ $pageTitle = 'Site Settings & Theme Configuration';
 
         <main class="admin-main">
             <h1>Global Settings & Theme (`settings.php`)</h1>
-            <p style="color: #666; margin-bottom: 1.5rem;">Manage site identity, global contact info, office locations, social profiles, and brand theme colors.</p>
+            <p style="color: #666; margin-bottom: 1.5rem;">Manage site logo, logo width, navigation branding, contact info, social profiles, and theme colors.</p>
 
             <?php if ($message): ?><p style="color: #2e7d32; background: #e8f5e9; padding: 0.75rem; border-radius: 4px; margin-bottom: 1.5rem;"><?= e($message) ?></p><?php endif; ?>
             <?php if ($error): ?><p style="color: #c62828; background: #ffebee; padding: 0.75rem; border-radius: 4px; margin-bottom: 1.5rem;"><?= e($error) ?></p><?php endif; ?>
 
-            <form method="post" action="settings.php">
+            <form method="post" action="settings.php" enctype="multipart/form-data">
                 <?= csrf_field() ?>
 
-                <!-- MODULE 1: SITE IDENTITY -->
+                <!-- LOGO & BRANDING -->
                 <div class="card-panel">
-                    <h2>🏢 Site Identity & Branding</h2>
+                    <h2>🖼️ Brand Logo & Width Controls</h2>
+
+                    <div class="form-group">
+                        <label><?= $settingKeys['site_logo'] ?></label>
+                        <input type="text" name="setting_site_logo" id="setting_site_logo" value="<?= e($currentSettings['site_logo'] ?? 'assets/logo.png') ?>">
+                        <label style="font-size:0.8rem; font-weight:normal; margin-top:0.4rem; color:#666;">Or upload new logo file:</label>
+                        <input type="file" name="file_site_logo" accept="image/*">
+                    </div>
+
                     <div class="form-grid">
+                        <div class="form-group">
+                            <label><?= $settingKeys['logo_width'] ?></label>
+                            <input type="number" name="setting_logo_width" value="<?= e($currentSettings['logo_width'] ?? '180') ?>" placeholder="180">
+                        </div>
                         <div class="form-group">
                             <label><?= $settingKeys['site_name'] ?></label>
                             <input type="text" name="setting_site_name" value="<?= e($currentSettings['site_name'] ?? 'Noor Staffing Group') ?>">
@@ -262,20 +305,27 @@ $pageTitle = 'Site Settings & Theme Configuration';
                             <label><?= $settingKeys['site_name_bn'] ?></label>
                             <input type="text" name="setting_site_name_bn" value="<?= e($currentSettings['site_name_bn'] ?? 'নূর স্টাফিং গ্রুপ') ?>">
                         </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['site_tagline'] ?></label>
-                            <input type="text" name="setting_site_tagline" value="<?= e($currentSettings['site_tagline'] ?? 'Offshore Operational Excellence') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['site_logo_text'] ?></label>
-                            <input type="text" name="setting_site_logo_text" value="<?= e($currentSettings['site_logo_text'] ?? 'NOOR STAFFING') ?>">
-                        </div>
                     </div>
                 </div>
 
-                <!-- MODULE 2: CONTACT DETAILS & LOCATIONS -->
-                <div class="card-panel" style="border-top: 4px solid #b71c1c;">
-                    <h2>📍 Global Contact & Office Locations</h2>
+                <!-- SOCIAL & CONTACT -->
+                <div class="card-panel">
+                    <h2>🔗 Social Media & Contact Info</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><?= $settingKeys['linkedin_url'] ?></label>
+                            <input type="url" name="setting_linkedin_url" value="<?= e($currentSettings['linkedin_url'] ?? '#') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label><?= $settingKeys['facebook_url'] ?></label>
+                            <input type="url" name="setting_facebook_url" value="<?= e($currentSettings['facebook_url'] ?? '#') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label><?= $settingKeys['instagram_url'] ?></label>
+                            <input type="url" name="setting_instagram_url" value="<?= e($currentSettings['instagram_url'] ?? '#') ?>">
+                        </div>
+                    </div>
+
                     <div class="form-grid">
                         <div class="form-group">
                             <label><?= $settingKeys['contact_email'] ?></label>
@@ -286,70 +336,11 @@ $pageTitle = 'Site Settings & Theme Configuration';
                             <input type="text" name="setting_contact_phone" value="<?= e($currentSettings['contact_phone'] ?? '+880 1700-000000') ?>">
                         </div>
                     </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label><?= $settingKeys['contact_address'] ?></label>
-                            <textarea name="setting_contact_address" rows="2"><?= e($currentSettings['contact_address'] ?? 'Dhaka, Bangladesh') ?></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['contact_address_bn'] ?></label>
-                            <textarea name="setting_contact_address_bn" rows="2"><?= e($currentSettings['contact_address_bn'] ?? 'ঢাকা, বাংলাদেশ') ?></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label><?= $settingKeys['head_office_address'] ?></label>
-                            <textarea name="setting_head_office_address" rows="2"><?= e($currentSettings['head_office_address'] ?? 'New York City, NY, USA') ?></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['head_office_address_bn'] ?></label>
-                            <textarea name="setting_head_office_address_bn" rows="2"><?= e($currentSettings['head_office_address_bn'] ?? 'নিউ ইয়র্ক সিটি, নিউ ইয়র্ক, যুক্তরাষ্ট্র') ?></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label><?= $settingKeys['contact_map_embed_url'] ?></label>
-                        <input type="text" name="setting_contact_map_embed_url" value="<?= e($currentSettings['contact_map_embed_url'] ?? '') ?>" placeholder="https://www.google.com/maps/embed?pb=...">
-                    </div>
                 </div>
 
-                <!-- MODULE 3: SOCIAL MEDIA LINKS -->
+                <!-- THEME COLORS -->
                 <div class="card-panel">
-                    <h2>🔗 Social Media Links</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label><?= $settingKeys['social_linkedin'] ?></label>
-                            <input type="url" name="setting_social_linkedin" value="<?= e($currentSettings['social_linkedin'] ?? 'https://linkedin.com') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['social_facebook'] ?></label>
-                            <input type="url" name="setting_social_facebook" value="<?= e($currentSettings['social_facebook'] ?? 'https://facebook.com') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['social_twitter'] ?></label>
-                            <input type="url" name="setting_social_twitter" value="<?= e($currentSettings['social_twitter'] ?? 'https://twitter.com') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label><?= $settingKeys['social_instagram'] ?></label>
-                            <input type="url" name="setting_social_instagram" value="<?= e($currentSettings['social_instagram'] ?? 'https://instagram.com') ?>">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MODULE 4: DEFAULT SEO FALLBACKS & THEME COLORS -->
-                <div class="card-panel">
-                    <h2>🔍 Default SEO & Brand Theme Colors</h2>
-                    <div class="form-group">
-                        <label><?= $settingKeys['default_seo_title'] ?></label>
-                        <input type="text" name="setting_default_seo_title" value="<?= e($currentSettings['default_seo_title'] ?? 'Noor Staffing Group | Offshore Workforce Solutions') ?>">
-                    </div>
-                    <div class="form-group">
-                        <label><?= $settingKeys['default_seo_description'] ?></label>
-                        <textarea name="setting_default_seo_description" rows="2"><?= e($currentSettings['default_seo_description'] ?? 'Connecting global businesses with high-value placement and staffing solutions in Bangladesh.') ?></textarea>
-                    </div>
-
+                    <h2>🎨 Theme Color Variables</h2>
                     <div class="form-grid">
                         <div class="form-group">
                             <label><?= $settingKeys['theme_primary_color'] ?></label>
@@ -368,7 +359,7 @@ $pageTitle = 'Site Settings & Theme Configuration';
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit">Save All Global Settings</button>
+                <button type="submit" class="btn-submit">Save Settings & Branding</button>
             </form>
         </main>
     </div>

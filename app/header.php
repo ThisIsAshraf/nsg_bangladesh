@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// Ensure bootstrap is loaded once without duplicate requires
 if (!defined('BOOTSTRAP_LOADED')) {
     require_once __DIR__ . '/bootstrap.php';
 }
@@ -17,10 +16,8 @@ try {
     $q = db()->query("SELECT label, label_bn, url FROM navigation_items WHERE is_active=1 ORDER BY sort_order, id");
     $nav = $q->fetchAll();
 } catch (Throwable $t) {
-    // Fallback nav if DB lookup fails
 }
 
-// Default fallback items if database navigation table is empty
 if (empty($nav)) {
     $nav = [
         ['label' => 'Home', 'label_bn' => 'হোম', 'url' => 'index.php'],
@@ -35,12 +32,22 @@ if (empty($nav)) {
 $pageTitle = $pageTitle ?? $brand;
 $currentPage = basename($_SERVER['PHP_SELF'] ?? 'index.php');
 
-// Helper function to build language switcher URLs while preserving current GET parameters
 function get_lang_url(string $lang): string
 {
     $queryParams = $_GET;
     $queryParams['lang'] = $lang;
     return '?' . http_build_query($queryParams);
+}
+
+// Ensure logo path has a clean leading slash for local server testing
+$logoSrc = '';
+if (!empty($logo)) {
+    if (strpos($logo, 'http') === 0) {
+        $logoSrc = $logo;
+    } else {
+        $cleanLogo = ltrim($logo, '/');
+        $logoSrc = site_url($cleanLogo);
+    }
 }
 ?>
 <!doctype html>
@@ -52,7 +59,6 @@ function get_lang_url(string $lang): string
     <meta name="description" content="<?= e(setting('seo_description', 'Connecting people with opportunity.')) ?>">
     <title><?= e($pageTitle) ?> | <?= e($brand) ?></title>
 
-    <!-- Editorial Serif & Sans Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -67,8 +73,14 @@ function get_lang_url(string $lang): string
         <div class="nsg-header-inner">
             <!-- Brand Logo -->
             <a class="brand nsg-brand" href="<?= e(site_url('index.php')) ?>">
-                <?php if ($logo): ?>
-                    <img src="<?= e(site_url($logo)) ?>" alt="<?= e($brand) ?>" style="max-width: <?= e($logoWidth) ?>px; height: auto;">
+                <?php
+                $logoPath = setting('site_logo', '');
+                $logoW = setting('logo_width', '180');
+                ?>
+                <?php if (!empty($logoPath)): ?>
+                    <img src="<?= e(site_url($logoPath)) ?>"
+                        alt="<?= e(setting('site_name', 'Noor Staffing Group')) ?>"
+                        style="width: <?= e($logoW) ?>px; max-width: 100%; height: auto; display: block;">
                 <?php else: ?>
                     <span class="nsg-logo-text">NOOR <span>STAFFING GROUP</span></span>
                 <?php endif; ?>
@@ -82,7 +94,6 @@ function get_lang_url(string $lang): string
                         $label = ($currentLocale === 'bn' && !empty($item['label_bn'])) ? $item['label_bn'] : $item['label'];
                         $itemUrl = trim($item['url'], '/');
 
-                        // Active state evaluation logic
                         $isActive = ($currentPage === $itemUrl)
                             || ($itemUrl === 'careers.php' && in_array($currentPage, ['job.php', 'apply.php'], true))
                             || ($itemUrl === 'index.php' && $currentPage === '');

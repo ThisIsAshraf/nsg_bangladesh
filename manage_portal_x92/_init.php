@@ -20,6 +20,7 @@ function render_admin_sidebar(string $activeKey = ''): string
     // Option B: Streamlined single-manager routes inside content/ & feature folders
     $items = [
         'dashboard'  => ['label' => '📊 Dashboard', 'url' => site_url('admin/index.php')],
+        'home_pg'    => ['label' => '🏠 Home Page', 'url' => site_url('admin/system/home.php')],
         'about'      => ['label' => '📄 About Us Page', 'url' => site_url('admin/content/about.php')],
         'board'      => ['label' => '📄 Leadership & Board', 'url' => site_url('admin/content/board.php')],
         'people_pg'  => ['label' => '📄 People & Culture Page', 'url' => site_url('admin/content/people.php')],

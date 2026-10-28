@@ -1,5 +1,165 @@
 nsg
 │
+├── .git
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── push-to-checkout.sample
+│   │   ├── sendemail-validate.sample
+│   │   └── update.sample
+│   ├── info
+│   │   └── exclude
+│   ├── logs
+│   │   ├── refs
+│   │   │   ├── heads
+│   │   │   │   └── main
+│   │   │   └── remotes
+│   │   │       └── origin
+│   │   │           └── main
+│   │   └── HEAD
+│   ├── objects
+│   │   ├── 01
+│   │   │   └── e4767cac92f6a0ff5712a1e9f18d5344bc6cf1
+│   │   ├── 1e
+│   │   │   └── 111c4b826d6ff8402a4725a61c5f15b913c873
+│   │   ├── 1f
+│   │   │   └── fc8d7bc74f6fdc416662850ef2c37a22596591
+│   │   ├── 2d
+│   │   │   └── 5a3a7eac37ace69adae187818f138dcd55b66c
+│   │   ├── 2e
+│   │   │   ├── 3d499901563dcb12f3609c9dffd93bd2673c37
+│   │   │   ├── 683d46e1b4a049ecf446e5a161f1a67d0931a0
+│   │   │   └── aae4cea5470e76e19b6eaa3545730e50f1f239
+│   │   ├── 3b
+│   │   │   └── 9e8315e87da1f38b3a54d6a8ff61a256a2a82b
+│   │   ├── 3c
+│   │   │   └── 2801f14f07a9e53a6c0a83db85bd9d28b49228
+│   │   ├── 3e
+│   │   │   └── 38f3806bdfffef2763020edeacdebe7201e090
+│   │   ├── 4b
+│   │   │   └── 7b2bdff013aebc27311670956d3d4d9bf4b626
+│   │   ├── 4e
+│   │   │   ├── 4229afbaafb468e2f4b843b3af836cb8a890eb
+│   │   │   └── a601be07a34b5b0e6bcf8578f835fe630a4cf2
+│   │   ├── 4f
+│   │   │   ├── 36d796d288f85d688bfec6e107cb1306c8d291
+│   │   │   └── d912f6623a265cc284a05ccf9f9d310e26cffe
+│   │   ├── 5b
+│   │   │   ├── 695649412e6d71acb53857595c390c12a5840f
+│   │   │   └── ad9d97e8def366907d58a93dfe4a51c3409dc1
+│   │   ├── 06
+│   │   │   ├── f12781a2268a20ef6d06dcf25b5c44fef15ef8
+│   │   │   └── fa1be08a3f0f02e3a0969ddc74757e1f7bc3f4
+│   │   ├── 6d
+│   │   │   └── aaa7b03db7c1ff52e8d517579389eaae3323a9
+│   │   ├── 6e
+│   │   │   └── f90846b51dae14ccdcb315ffbed8132109665c
+│   │   ├── 7b
+│   │   │   ├── 4219c8ecb6467cb987c161616972ec41ae0c3e
+│   │   │   └── abd128fc9fdc52abcf771abd5a906c42629b55
+│   │   ├── 7f
+│   │   │   └── 4c89232c60c32f70c572e77ff3d10907545c79
+│   │   ├── 08
+│   │   │   └── 2a4514e7d3125bd5eb1c58fae99db542c3c96e
+│   │   ├── 8c
+│   │   │   └── 7d459c4e8bf7e94ee3e2ed1125435360396388
+│   │   ├── 9b
+│   │   │   ├── 1c958feee1dfb9abd2c21ef6955b952f03b777
+│   │   │   └── 9d77ff78b862884a36a4093c1c2e59f3b04d7f
+│   │   ├── 28
+│   │   │   └── e1a597cfc0f912d5268419a936cf87bd0c82de
+│   │   ├── 33
+│   │   │   └── bd7929af4e00ee554fab7ec812f2cdf6b5ab2c
+│   │   ├── 34
+│   │   │   └── 1553f0ca41942527cd3311a7428d1d9fea4aa5
+│   │   ├── 41
+│   │   │   └── cebf2677d97fd7b341af1f0951b91905ee8dfc
+│   │   ├── 44
+│   │   │   └── 7bfe6bb7d593daba0fd0c87b6fbdd4c0e2da0d
+│   │   ├── 50
+│   │   │   └── f8bd80d106390c2618897a86fe322f183de351
+│   │   ├── 53
+│   │   │   └── 679ed5af52e5dcb9bcec7b53daee30b24a6b0d
+│   │   ├── 58
+│   │   │   └── 0e3fff9b378957abca250839306f7c0901adec
+│   │   ├── 59
+│   │   │   └── 7e485fa6241166b54b8032860cd0dcd884e971
+│   │   ├── 90
+│   │   │   └── a234174a41a480c462b7cccc073cf8de5d4e52
+│   │   ├── 98
+│   │   │   └── 7734c1c426c2c0927b278b83a6ca81907eac4e
+│   │   ├── a2
+│   │   │   └── 03dae904fdb8d9888c4aa5b6116bbd2c3af7bf
+│   │   ├── aa
+│   │   │   └── 0a398b4f8ed8c41bf148d7c3e6ff4828f2ef91
+│   │   ├── b3
+│   │   │   └── 0511d6d6fa22f3c1d0672cf36403cf6180b351
+│   │   ├── b9
+│   │   │   └── 6ce9dc24a5c8a387d0c630c51aaf7e9ea931fc
+│   │   ├── bf
+│   │   │   ├── 347ecdb4216b176e5db1b138b66a21457b1362
+│   │   │   └── c77253e794681ab7e076670eaa53b5a9996178
+│   │   ├── c2
+│   │   │   ├── 4c24f1101f8105394575e4b77672452fec2487
+│   │   │   └── 86acb66563c4af8c8e82c967de88d7499fdedd
+│   │   ├── c3
+│   │   │   └── ff9b83638994a656f61aca16adc291070230eb
+│   │   ├── c8
+│   │   │   └── 4f0298d6528a21698fe5f6919f4462800a9473
+│   │   ├── d4
+│   │   │   └── b4c02c1dd9e31fd60f640e2ca02601bbe4146f
+│   │   ├── d5
+│   │   │   └── 64d0bc3dd917926892c55e3706cc116d5b165e
+│   │   ├── d7
+│   │   │   └── 28e0251c14b94f3d3915bb6701f7e5871f5b43
+│   │   ├── d8
+│   │   │   └── 0a1eb8064b045f450970ca376b5f19a071f310
+│   │   ├── dc
+│   │   │   └── 77af2dd4af1251d366f0cbcf490d8851de4371
+│   │   ├── dd
+│   │   │   ├── 0dfcaadfdcfc1ee5de24ccaf9796e98c94af5e
+│   │   │   └── 45ac45352fed6ee0b654c010cec03f89067173
+│   │   ├── e5
+│   │   │   └── 484e7a03acc6d8a7c8517817b33eada928248b
+│   │   ├── e6
+│   │   │   └── 9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+│   │   ├── e9
+│   │   │   └── c20a900da757528a3e9f6c3d89341b89adaee0
+│   │   ├── ea
+│   │   │   └── 253b99a65f75b6ad2ad51aff8279df3d8f1053
+│   │   ├── f1
+│   │   │   └── 2a1f438a9b12f130ab77b40003906e88aeb829
+│   │   ├── f7
+│   │   │   └── 2a9ca83451d5ea30d13a067b079b90b7f16582
+│   │   ├── fb
+│   │   │   └── 033cf2b9b2577af24b76c83e07156576a25943
+│   │   ├── fc
+│   │   │   └── 13966f94d8604feceef3c71558e09c60ab1b6e
+│   │   ├── fd
+│   │   │   └── a83a02fd810d41731571a60c742d69a785d04a
+│   │   ├── info
+│   │   └── pack
+│   ├── refs
+│   │   ├── heads
+│   │   │   └── main
+│   │   ├── remotes
+│   │   │   └── origin
+│   │   │       └── main
+│   │   └── tags
+│   ├── COMMIT_EDITMSG
+│   ├── config
+│   ├── description
+│   ├── HEAD
+│   └── index
 ├── api
 │   ├── v1
 │   │   ├── applications
@@ -31,11 +191,11 @@ nsg
 │   │   └── jobs.php
 │   ├── content
 │   │   ├── about.php
+│   │   ├── apply.php
 │   │   ├── board.php
+│   │   ├── careers.php
 │   │   ├── contact.php
 │   │   ├── pages.php
-│   │   └── people.php
-│   ├── people
 │   │   └── people.php
 │   ├── system
 │   │   ├── home.php

@@ -9,19 +9,29 @@ if (!function_exists('e')) {
     }
 }
 
+/**
+ * Generate full URL or root-relative path correctly
+ */
 if (!function_exists('site_url')) {
     function site_url(string $path = ''): string
     {
-        $envUrl = getenv('APP_URL');
-        if (!empty($envUrl)) {
-            $base = rtrim($envUrl, '/');
-        } else {
-            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-            $dir = dirname($scriptName);
-            $base = ($dir === '/' || $dir === '\\') ? '' : rtrim(str_replace('\\', '/', $dir), '/');
-            $base = preg_replace('#/(manage_portal_x92|admin)(/.*)?$#i', '', $base);
+        $appUrl = rtrim(getenv('APP_URL') ?: '', '/');
+        $cleanPath = '/' . ltrim($path, '/');
+
+        if ($appUrl !== '') {
+            return $appUrl . $cleanPath;
         }
-        return rtrim($base, '/') . '/' . ltrim($path, '/');
+
+        // Auto-detect project subdirectory under localhost (e.g. /nsg/)
+        $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\');
+        $projDir = rtrim(dirname(__DIR__), '/\\'); // root project folder
+
+        $basePath = '';
+        if ($docRoot !== '' && str_starts_with($projDir, $docRoot)) {
+            $basePath = str_replace('\\', '/', substr($projDir, strlen($docRoot)));
+        }
+
+        return rtrim($basePath, '/') . $cleanPath;
     }
 }
 
@@ -53,22 +63,27 @@ if (!function_exists('verify_csrf')) {
     }
 }
 
+/**
+ * Get setting value from database with optional fallback
+ */
 if (!function_exists('setting')) {
     function setting(string $key, string $default = ''): string
     {
-        static $cache = null;
-        if ($cache === null) {
-            $cache = [];
+        static $settingsCache = null;
+
+        if ($settingsCache === null) {
+            $settingsCache = [];
             try {
-                $stmt = db()->query("SELECT setting_key, setting_value FROM site_settings");
+                $stmt = db()->query('SELECT `key`, `value` FROM settings');
                 while ($row = $stmt->fetch()) {
-                    $cache[$row['setting_key']] = $row['setting_value'];
+                    $settingsCache[$row['key']] = (string)$row['value'];
                 }
             } catch (Throwable $t) {
-                // Table might not exist during setup
+                // Return default on error
             }
         }
-        return $cache[$key] ?? $default;
+
+        return $settingsCache[$key] ?? $default;
     }
 }
 

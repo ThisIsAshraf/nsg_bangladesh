@@ -41,7 +41,7 @@ function handle_home_image_upload(string $fileInputKey): ?string
     throw new Exception('Failed to upload image file.');
 }
 
-// Complete Fields Configuration matching front-end index.php
+// Complete Fields Configuration including Leadership Overrides
 $homeFields = [
     // 1. Split Hero Section
     'hero_title'          => ['label' => 'Hero Main Heading Title', 'type' => 'text', 'default' => 'Operational excellence with global impact'],
@@ -58,18 +58,23 @@ $homeFields = [
     'cta_heading'         => ['label' => 'CTA Banner Title Text', 'type' => 'text', 'default' => 'Take the first step toward your dreams.'],
     'cta_button_label'    => ['label' => 'CTA Button Text', 'type' => 'text', 'default' => 'SUBMIT YOUR RESUME'],
 
-    // 4. NSG at a Glance Stats (1-5)
+    // 4. Leadership Highlight (Featured Leader Override)
+    'leader_name'         => ['label' => 'Leader Full Name', 'type' => 'text', 'default' => 'Mr. Noor'],
+    'leader_photo'        => ['label' => 'Leader Photo / Headshot', 'type' => 'image', 'default' => 'assets/leader-placeholder.jpg'],
+    'leader_speech'       => ['label' => 'Leader Speech / Biography Copy', 'type' => 'textarea', 'default' => 'Since 2003, Mr. Noor has been the individual owner and president of Noor Inc., a privately held umbrella company headquartered in New York City.'],
+
+    // 5. NSG at a Glance Stats (1-5)
     'stat_1'              => ['label' => 'At a Glance Stat 1', 'type' => 'text', 'default' => '20+ Years in operation'],
     'stat_2'              => ['label' => 'At a Glance Stat 2', 'type' => 'text', 'default' => '14 US offices supporting clients in 46 states'],
     'stat_3'              => ['label' => 'At a Glance Stat 3', 'type' => 'text', 'default' => '250+ corporate staff in the U.S. and 100+ team members in Bangladesh'],
     'stat_4'              => ['label' => 'At a Glance Stat 4', 'type' => 'text', 'default' => '22 specialized brands under the Noor, Inc. portfolio'],
     'stat_5'              => ['label' => 'At a Glance Stat 5', 'type' => 'text', 'default' => '6,000+ contingent workers actively employed nationwide'],
 
-    // 5. Vision Banner
+    // 6. Vision Banner
     'vision_quote'        => ['label' => 'Vision Statement Quote Text', 'type' => 'text', 'default' => 'Driven by talent and built on trust.'],
-    'vision_bg_image'     => ['label' => 'Vision Section Background Image', 'type' => 'image', 'default' => 'uploads/images/bd-flag-bg.jpg'],
+    'vision_bg_image'     => ['label' => 'Vision Section Background Image', 'type' => 'image', 'default' => 'assets/bd-flag-bg.jpg'],
 
-    // 6. Our Expertise Pillars (4 Cards)
+    // 7. Our Expertise Pillars (4 Cards)
     'exp_1_icon'          => ['label' => 'Expertise 1 Icon/Emoji', 'type' => 'text', 'default' => '👥'],
     'exp_1_title'         => ['label' => 'Expertise 1 Title', 'type' => 'text', 'default' => 'Staffing Solutions'],
     'exp_1_body'          => ['label' => 'Expertise 1 Description', 'type' => 'textarea', 'default' => 'Providing fast, reliable staffing support by connecting businesses with pre-vetted talent.'],
@@ -86,7 +91,7 @@ $homeFields = [
     'exp_4_title'         => ['label' => 'Expertise 4 Title', 'type' => 'text', 'default' => 'Workforce Management'],
     'exp_4_body'          => ['label' => 'Expertise 4 Description', 'type' => 'textarea', 'default' => 'Offering comprehensive workforce solutions that include oversight, compliance, and transparent reporting.'],
 
-    // 7. Culture & Office Section
+    // 8. Culture & Office Section
     'culture_heading'     => ['label' => 'Culture Section Heading', 'type' => 'text', 'default' => 'Opportunities with NSG Bangladesh'],
     'culture_body'        => ['label' => 'Culture Section Description Paragraph', 'type' => 'textarea', 'default' => 'At NSG Bangladesh, we are building more than just an offshore support team. We are creating a place where talented professionals can grow, contribute, and be part of something bigger.'],
     'office_wall_image'   => ['label' => 'Office Showcase Image Path', 'type' => 'image', 'default' => 'assets/office-wall.png']
@@ -99,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         db()->beginTransaction();
 
-        // 1. Save Page Meta
         $qPage = db()->prepare('
             INSERT INTO pages (title, slug, seo_title, seo_description, status, created_at, updated_at, updated_by) 
             VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?) 
@@ -119,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $admin['id']
         ]);
 
-        // 2. Save Home Section Fields
         $qSection = db()->prepare('
             INSERT INTO page_sections (page_slug, section_key, content_type, content_value) 
             VALUES (?, ?, ?, ?) 
@@ -139,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         db()->commit();
-        $message = 'Home page sections, text colors, and feature images saved successfully!';
+        $message = 'Home page settings and leadership section updated successfully!';
     } catch (Throwable $t) {
         if (db()->inTransaction()) {
             db()->rollBack();
@@ -321,11 +324,11 @@ $pageTitle = 'Manage Home Page';
 <body>
 
     <div class="admin-layout">
-        <?= render_admin_sidebar('dashboard') ?>
+        <?= render_admin_sidebar('home_pg') ?>
 
         <main class="admin-main">
             <h1>Manage Home Page (`index.php`)</h1>
-            <p style="color: #666; margin-bottom: 1.5rem;">Control hero taglines, feature images, about summary copy, company stats metrics, expertise pillars, and vision section quotes.</p>
+            <p style="color: #666; margin-bottom: 1.5rem;">Control hero taglines, feature images, leader headshot/speech, stats metrics, expertise pillars, and vision section quotes.</p>
 
             <?php if ($message): ?><p style="color: #2e7d32; background: #e8f5e9; padding: 0.75rem; border-radius: 4px; margin-bottom: 1.5rem;"><?= e($message) ?></p><?php endif; ?>
             <?php if ($error): ?><p style="color: #c62828; background: #ffebee; padding: 0.75rem; border-radius: 4px; margin-bottom: 1.5rem;"><?= e($error) ?></p><?php endif; ?>
@@ -334,7 +337,7 @@ $pageTitle = 'Manage Home Page';
                 <?= csrf_field() ?>
 
                 <div class="card-panel">
-                    <h2>🏠 Hero, Stats & Feature Sections</h2>
+                    <h2>🏠 Hero, Leadership & Page Sections</h2>
                     <?php foreach ($homeFields as $key => $conf): ?>
                         <?php $val = $savedValues[$key] ?? $conf['default']; ?>
                         <div class="form-group">
